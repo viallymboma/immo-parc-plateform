@@ -11,6 +11,7 @@ import { AdminModule } from './admin/admin.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
+import { PackageModule } from './packages/packages.module';
 import { ReportsModule } from './reports/reports.module';
 import { TasksModule } from './tasks/tasks.module';
 import { TransactionModule } from './transactions/transaction.module';
@@ -19,6 +20,7 @@ import { UsersModule } from './users/users.module';
 @Module({
 	imports: [
 		ReportsModule, UsersModule, TasksModule, AuthModule, AdminModule, TransactionModule,
+		PackageModule, 
 		MongooseModule.forRoot(
 			// process.env.DATABASE_URL
 			'mongodb+srv://mbomadesir:gt1xQPboLPYGv4cs@immoparc.jigjs.mongodb.net/immo_parc_db'

@@ -1,4 +1,5 @@
 import { Model } from 'mongoose';
+import { CreatePackageDto } from 'src/dto/create-packages.dto';
 import { Packages } from 'src/entities/package.entity';
 
 /* eslint-disable prettier/prettier */
@@ -7,9 +8,10 @@ import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class PackageService {
-  constructor(@InjectModel(Packages.name) private readonly packageModel: Model<any>) {}
+  constructor(@InjectModel(Packages.name) private readonly packageModel: Model<CreatePackageDto>) {}
 
-  async createPackage(data: Partial<Packages>): Promise<Packages> {
+  async createPackage(data: CreatePackageDto): Promise<CreatePackageDto> {
+    console.log(data, "creating a package in in service")
     const pkg = new this.packageModel(data);
     return pkg.save();
   }

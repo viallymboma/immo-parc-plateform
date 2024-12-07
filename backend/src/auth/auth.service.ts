@@ -1,6 +1,12 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
+/* eslint-disable prettier/prettier */
 import * as bcrypt from 'bcrypt';
+
+import {
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+
 import { UsersService } from '../users/users.service';
 
 @Injectable()
@@ -10,8 +16,8 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async validateUser(email: string, password: string) {
-    const user = await this.usersService.findByEmail(email);
+  async validateUser(phone: string, password: string) {
+    const user = await this.usersService.findByPhone(phone);
     if (user && (await bcrypt.compare(password, user.password))) {
       return user;
     }
@@ -19,7 +25,7 @@ export class AuthService {
   }
 
   async login(user: any) {
-    const payload = { email: user.email, sub: user.id };
+    const payload = { email: user.email, sub: user._id };
     return {
       accessToken: this.jwtService.sign(payload),
     };

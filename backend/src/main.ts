@@ -1,3 +1,5 @@
+import * as bodyParser from 'body-parser';
+
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 
@@ -13,6 +15,10 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Allow these HTTP methods
     credentials: true, // Allow credentials (e.g., cookies, authorization headers)
   });
-  await app.listen(process.env.PORT ?? 5000);
+  const PORT = 5000;
+  // await app.listen(PORT);
+  app.use(bodyParser.json()); // Ensure JSON parsing
+  console.log(`Application is running on: http://localhost:${PORT}`);
+  await app.listen(process.env.PORT ?? PORT);
 }
 bootstrap();

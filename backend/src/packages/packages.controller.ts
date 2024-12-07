@@ -19,8 +19,9 @@ import { PackageService } from './packages.service';
 export class PackageController {
   constructor(private readonly packageService: PackageService) {}
 
-  @Post()
+  @Post('/create-package')
   async create(@Body() data: CreatePackageDto): Promise<CreatePackageDto> {
+    console.log(data, "creating a package in controller")
     return this.packageService.createPackage(data);
   }
 

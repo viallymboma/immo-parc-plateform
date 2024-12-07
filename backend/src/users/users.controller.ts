@@ -2,6 +2,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -22,7 +23,7 @@ export class UsersController {
     return await this.usersService.findAllUsers(); 
   }
 
-  @Post()
+  @Post("/create-regular-user")
   createUser(@Body() body: { phone: string; password: string; parentId?: string }) {
     return this.usersService.createUser(body.phone, body.password, body.parentId);
   }
@@ -41,4 +42,9 @@ export class UsersController {
   updateStatus(@Param('id') userId: string, @Body() body: { status: 'internship' | 'regular' }) {
     return this.usersService.updateStatus(userId, body.status);
   } 
+
+  @Delete(':id')
+  async delete(@Param('id') id: string): Promise<void> {
+    return this.usersService.deleteUser(id);
+  }
 } 

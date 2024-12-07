@@ -1,3 +1,4 @@
+import * as bcrypt from 'bcrypt';
 /* eslint-disable prettier/prettier */
 import { Model } from 'mongoose';
 import { Packages } from 'src/entities/package.entity';
@@ -28,9 +29,12 @@ export class UsersService {
 
     if (packageId && !pkg) throw new Error('Package not found');
 
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     const user = new this.userModel({
       email,
-      password,
+      password: hashedPassword,
       status: 'active',
       accountType: 'internship', 
       parent: parent ? parent._id : null,
@@ -52,16 +56,25 @@ export class UsersService {
     console.log(phone, password, email, "in the service")
     const existingAdmin = await this.userModel.findOne({ role: 'super_admin' });
     if (existingAdmin) throw new Error('Super admin already exists');
+
+    // Fetch all packages and find the highest level
+  const packages = await this.packageModel.find().sort({ level: -1 }).exec();
+  if (!packages || packages.length === 0) throw new Error('No packages found');
+  const highestPackage = packages[0]; // The package with the highest level
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
   
     const superAdmin = new this.userModel({
       email,
-      password,
+      password: hashedPassword,
       phone,
       status: 'active',
       accountType: 'regular', 
       role: 'super_admin',
       parentId: null, // No parent for super admin
       children: [],
+      package: highestPackage._id, // Assign the highest package
     });
   
     return superAdmin.save();
@@ -97,6 +110,10 @@ export class UsersService {
     return this.userModel.findOne({ email });
   }
 
+  async findByPhone(phone: string): Promise<Users | null> {
+    return this.userModel.findOne({ phone });
+  }
+
   async findUserById(userId: string): Promise<Users | null> {
     return this.userModel.findById(userId);
   }
@@ -114,6 +131,10 @@ export class UsersService {
       .populate('children', 'email accountType funds'); // Adjust fields as necessary
 
     return user?.children || null;
+  }
+
+  async deleteUser(userId: string): Promise<void> {
+    await this.userModel.findByIdAndDelete(userId).exec();
   }
 }
 

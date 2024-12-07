@@ -13,8 +13,8 @@ export class AuthController {
 
   @Post('login')
   async login(@Body() body) {
-    const { email, password } = body;
-    const user = await this.authService.validateUser(email, password);
+    const { phone, password } = body;
+    const user = await this.authService.validateUser(phone, password);
     return this.authService.login(user);
   }
 }
