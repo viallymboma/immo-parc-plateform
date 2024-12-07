@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 import {
   Document,
+  Schema as MongooseSchema,
   Types,
 } from 'mongoose';
 
@@ -9,6 +10,8 @@ import {
   Schema,
   SchemaFactory,
 } from '@nestjs/mongoose';
+
+import { Packages } from './package.entity';
 
 export type UsersDocument = Users & Document;
 
@@ -19,6 +22,9 @@ export class Users {
 
   @Prop({ required: true, unique: true })
   email: string;
+
+  @Prop({ default: 0 })
+  phone: string;
 
   @Prop({ required: true })
   password: string;
@@ -35,8 +41,14 @@ export class Users {
   @Prop({ enum: ['internship', 'regular'], default: 'internship' })
   accountType: string;
 
+  @Prop({ type: String, enum: ['super_admin', 'regular_user'], default: 'regular_user' })
+  role: 'super_admin' | 'regular_user'; // Role property
+
   @Prop({ enum: ['active', 'inactive'], default: 'active' })
   status: string;
+
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Package', required: false })
+  package: Packages | null; // Reference to a Package
 
   @Prop()
   internshipExpiry: Date;

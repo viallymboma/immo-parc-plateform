@@ -15,6 +15,10 @@ export class UpdateUserDto {
   @IsOptional()
   readonly email?: string;
 
+  @IsEmail()
+  @IsOptional()
+  readonly phone?: string;
+
   @IsString()
   @MinLength(6)
   @IsOptional() // Optional since the password may not always be updated

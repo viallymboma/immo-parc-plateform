@@ -14,7 +14,7 @@ export class CreateUserDto {
 
   @IsEmail()
   @IsNotEmpty()
-  readonly email: string;
+  readonly phone: string;
 
   @IsString()
   @MinLength(6)
@@ -25,3 +25,4 @@ export class CreateUserDto {
   @IsOptional() // Optional in case the status is auto-assigned during creation
   readonly status?: string;
 }
+

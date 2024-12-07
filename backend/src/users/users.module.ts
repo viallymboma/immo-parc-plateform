@@ -7,6 +7,7 @@ import {
   Users,
   UsersSchema,
 } from 'src/entities/user.entity';
+import { PackageModule } from 'src/packages/packages.module';
 
 // import { TasksService } from 'src/tasks/task.service';
 /* eslint-disable prettier/prettier */
@@ -22,6 +23,8 @@ import { UsersService } from './users.service';
             name: Users.name, 
             schema: UsersSchema, 
         }]),
+        PackageModule, 
+        // MongooseModule.forFeature([{ name: Task.name, schema: TaskSchema, }]), // Import PackageModule
         MongooseModule.forFeature([{ name: Task.name, schema: TaskSchema, }]),
     ],
     controllers: [UsersController], // Controllers are listed here

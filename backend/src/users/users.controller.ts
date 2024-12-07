@@ -19,6 +19,11 @@ export class UsersController {
     return this.usersService.createUser(body.email, body.password, body.parentId);
   }
 
+  @Post()
+  createSuperAdmin(@Body() body: { email: string; password: string; parentId?: string }) {
+    return this.usersService.createSuperAdmin(body.email, body.password);
+  }
+
   // createUser(@Body() body: CreateUserDto) {
   //   return this.usersService.createUser(body.email, body.password, body.parentId);
   // }
