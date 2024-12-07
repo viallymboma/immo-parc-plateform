@@ -17,10 +17,10 @@ export type UsersDocument = Users & Document;
 
 @Schema({ timestamps: true })
 export class Users {
-  @Prop({ required: true, unique: true })
+  @Prop({ required: false, unique: true })
   username: string;
 
-  @Prop({ required: true, unique: true })
+  @Prop({ required: false, unique: true })
   email: string;
 
   @Prop({ default: 0 })

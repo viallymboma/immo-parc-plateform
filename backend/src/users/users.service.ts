@@ -21,7 +21,7 @@ export class UsersService {
   // constructor(@InjectModel(Users.name) private readonly userModel: Model<UsersDocument>) {}
 
 
-  async createUser(email: string, password: string, parentId?: string, packageId?: string): Promise<Users> {
+  async createUser(password: string, packageId: string, parentId?: string, email?: string,): Promise<Users> {
     const parent: any = parentId ? await this.userModel.findById(parentId) : null;
 
     const pkg = packageId ? await this.packageModel.findById(packageId) : null;
@@ -47,14 +47,17 @@ export class UsersService {
     return user;
   }
 
-  async createSuperAdmin(email: string, password: string): Promise<Users> {
+  async createSuperAdmin(phone: string, password: string, email?: string,): Promise<Users> {
+    console.log(phone, password, email, "in the service")
     const existingAdmin = await this.userModel.findOne({ role: 'super_admin' });
     if (existingAdmin) throw new Error('Super admin already exists');
   
     const superAdmin = new this.userModel({
       email,
       password,
-      status: 'regular',
+      phone,
+      status: 'active',
+      accountType: 'regular', 
       role: 'super_admin',
       parentId: null, // No parent for super admin
       children: [],
@@ -82,6 +85,12 @@ export class UsersService {
     return user.save();
   }
   
+
+  async findAllUsers(): Promise<Users | null> {
+    const result: any = await this.userModel.find();
+    console.log(result, "hello result"); 
+    return result;
+  }
 
   async findByEmail(email: string): Promise<Users | null> {
     return this.userModel.findOne({ email });

@@ -2,6 +2,7 @@
 import {
   Body,
   Controller,
+  Get,
   Param,
   Post,
 } from '@nestjs/common';
@@ -14,14 +15,22 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post()
-  createUser(@Body() body: { email: string; password: string; parentId?: string }) {
-    return this.usersService.createUser(body.email, body.password, body.parentId);
+  @Get()
+  // @Roles('super_admin') // Only super admin can access this
+  async getAllUsers() {
+    console.log("hellooooooo")
+    return this.usersService.findAllUsers(); 
   }
 
   @Post()
-  createSuperAdmin(@Body() body: { email: string; password: string; parentId?: string }) {
-    return this.usersService.createSuperAdmin(body.email, body.password);
+  createUser(@Body() body: { phone: string; password: string; parentId?: string }) {
+    return this.usersService.createUser(body.phone, body.password, body.parentId);
+  }
+
+  @Post("/create-super-admin")
+  createSuperAdmin(@Body() body: { phone: string; password: string; email?: string }) {
+    console.log(body, body.phone, body.password, body.email, "in controller")
+    return this.usersService.createSuperAdmin(body.phone, body.password, body.email);
   }
 
   // createUser(@Body() body: CreateUserDto) {
