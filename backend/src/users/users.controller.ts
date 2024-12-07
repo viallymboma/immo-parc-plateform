@@ -15,11 +15,11 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Get()
+  @Get("/get-all-users")
   // @Roles('super_admin') // Only super admin can access this
   async getAllUsers() {
     console.log("hellooooooo")
-    return this.usersService.findAllUsers(); 
+    return await this.usersService.findAllUsers(); 
   }
 
   @Post()

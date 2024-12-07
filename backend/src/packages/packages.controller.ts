@@ -1,3 +1,5 @@
+import { CreatePackageDto } from 'src/dto/create-packages.dto';
+import { UpdatePackageDto } from 'src/dto/update-packages.dto';
 import { Packages } from 'src/entities/package.entity';
 
 /* eslint-disable prettier/prettier */
@@ -18,7 +20,7 @@ export class PackageController {
   constructor(private readonly packageService: PackageService) {}
 
   @Post()
-  async create(@Body() data: Partial<Packages>): Promise<Packages> {
+  async create(@Body() data: CreatePackageDto): Promise<CreatePackageDto> {
     return this.packageService.createPackage(data);
   }
 
@@ -33,7 +35,7 @@ export class PackageController {
   }
 
   @Put(':id')
-  async update(@Param('id') id: string, @Body() data: Partial<Packages>): Promise<Packages> {
+  async update(@Param('id') id: string, @Body() data: UpdatePackageDto): Promise<UpdatePackageDto> {
     return this.packageService.updatePackage(id, data);
   }
 

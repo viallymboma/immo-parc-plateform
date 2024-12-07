@@ -31,7 +31,8 @@ export class UsersService {
     const user = new this.userModel({
       email,
       password,
-      status: 'internship',
+      status: 'active',
+      accountType: 'internship', 
       parent: parent ? parent._id : null,
       package: pkg ? pkg._id : null,
       internshipExpiry: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),

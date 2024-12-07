@@ -16,12 +16,27 @@ export class Packages extends Document {
   level: number;
 
   @Prop({ required: true })
-  price: number;
+  inverstment: number;
+
+  @Prop({ required: true })
+  numberOfTaskPerDay: number;
+
+  @Prop({ required: true })
+  priceEarnedPerTaskDone: number;
+
+  @Prop({ required: true })
+  priceEarnedForAllTaskDonePerDay: number;
+
+  @Prop({ required: true })
+  priceEarnedForAllTaskDonePerMonth: number;
+
+  @Prop({ required: true })
+  priceEarnedForAllTaskDonePerYear: number;
 
   @Prop({ required: false })
   description?: string;
 
-  @Prop({ type: Map, of: String }) // Dynamic additional options
+  @Prop({ type: Map, of: String, required: false }) // Dynamic additional options
   options?: Map<string, string>;
 }
 
