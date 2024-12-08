@@ -25,9 +25,22 @@ export class AuthService {
   }
 
   async login(user: any) {
-    const payload = { email: user.email, sub: user._id };
-    return {
-      accessToken: this.jwtService.sign(payload),
-    };
+    // const payload = { email: user.email, sub: user._id.toString() };
+    const payload = {
+      // ...user, 
+      children: user?.children, 
+      funds: user?.funds,
+      accountType: user?.accountType,
+      role: user?.role,
+      status: user?.status,
+      _id: user?._id.toString(),
+      sub: user._id.toString(), 
+      email: 'viallymboma@gmail.com',
+      package: user?.package.toString (),
+      createdAt: user?.createdAt,
+      updatedAt: user?.updatedAt,
+    }
+    // console.log(payload, "no be easy ooo", user)
+    return this.jwtService.sign(payload);
   }
 }

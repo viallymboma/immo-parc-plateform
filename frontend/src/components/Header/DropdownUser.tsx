@@ -1,12 +1,16 @@
+"use client"
 import { useState } from 'react';
 
 import Image from 'next/image';
 import Link from 'next/link';
 
 import ClickOutside from '@/components/ClickOutside';
+import { useAuth } from '@/hooks/useAuth';
 
 const DropdownUser = () => {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false); 
+
+  const { user } = useAuth();
 
   return (
     <ClickOutside onClick={() => setDropdownOpen(false)} className="relative">

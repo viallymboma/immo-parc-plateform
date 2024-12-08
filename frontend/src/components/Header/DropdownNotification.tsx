@@ -1,7 +1,10 @@
-import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
-import ClickOutside from "@/components/ClickOutside";
-import Image from "next/image";
+"use client";
+import { useState } from 'react';
+
+import Image from 'next/image';
+import Link from 'next/link';
+
+import ClickOutside from '@/components/ClickOutside';
 
 const notificationList = [
   {

@@ -1,4 +1,5 @@
 import { UsersModule } from 'src/users/users.module';
+import { JwtAuthGuard } from 'src/utils/jwtAuthGuard';
 
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
@@ -14,12 +15,14 @@ import { JwtStrategy } from './jwt.strategy';
   imports: [
     PassportModule,
     JwtModule.register({
-      secret: process.env.JWT_SECRET, // Replace with a secure secret
-      signOptions: { expiresIn: '7d' },
+      // secret: process.env.JWT_SECRET, // Replace with a secure secret
+      secret: 'your_jwt_secret',
+      signOptions: { expiresIn: '1h' },
     }),
     UsersModule,
   ],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, JwtAuthGuard],
   controllers: [AuthController],
+  exports: [JwtModule, JwtAuthGuard], // Export JwtModule for other modules
 })
 export class AuthModule {}

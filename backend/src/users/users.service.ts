@@ -106,12 +106,16 @@ export class UsersService {
     return result;
   }
 
-  async findByEmail(email: string): Promise<Users | null> {
+  async findByEmail(email: string): Promise<UsersDocument | null> {
     return this.userModel.findOne({ email });
   }
 
-  async findByPhone(phone: string): Promise<Users | null> {
-    return this.userModel.findOne({ phone });
+  async findByPhone(phone: string): Promise<UsersDocument | null> {
+    return this.userModel.findOne({ phone })
+    // .populate('parent', 'username email') // Populate parent details
+    // .populate('children', 'username email') // Populate children details
+    // .populate('package', 'name price') // Populate package details
+    // .exec(); // Execute the query and return a promise; 
   }
 
   async findUserById(userId: string): Promise<Users | null> {

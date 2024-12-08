@@ -5,6 +5,7 @@ import {
   Module,
   OnModuleInit,
 } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 
 import { AdminModule } from './admin/admin.module';
@@ -23,11 +24,14 @@ import { UsersModule } from './users/users.module';
 		PackageModule, 
 		MongooseModule.forRoot(
 			// process.env.DATABASE_URL
-			'mongodb+srv://mbomadesir:gt1xQPboLPYGv4cs@immoparc.jigjs.mongodb.net/immo_parc_db'
-			// 'mongodb://localhost:27017/immo_parc_db'
+			// 'mongodb+srv://mbomadesir:gt1xQPboLPYGv4cs@immoparc.jigjs.mongodb.net/immo_parc_db'
+			'mongodb://localhost:27017/immo_parc_db'
 		), 
+		ConfigModule.forRoot({
+			isGlobal: true, // Makes the config accessible across all modules
+		}),
 	],
-	controllers: [AppController],
+	controllers: [AppController], 
 	providers: [AppService],
 })
 export class AppModule implements OnModuleInit {

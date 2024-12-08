@@ -1,3 +1,4 @@
+"use client";
 import React from 'react';
 
 import BottomNavigation from './other_component/BottomNavigation';

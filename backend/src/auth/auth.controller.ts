@@ -1,30 +1,96 @@
-import { Response } from 'express'; // Import from express
+/* eslint-disable prettier/prettier */
+import {
+  Request,
+  Response,
+} from 'express'; // Import from express
+import { JwtAuthGuard } from 'src/utils/jwtAuthGuard';
 
 /* eslint-disable prettier/prettier */
 import {
   Body,
   Controller,
+  Get,
+  Headers,
   Post,
+  Req,
   Res,
+  UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 
 import { AuthService } from './auth.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly jwtService: JwtService, 
+  ) {}
+
+  @UseGuards(JwtAuthGuard) // Ensures the user is authenticated
+  @Get('me')
+  getProfile(@Req() req: Request) {
+    console.log(req, "hhhhhhhhhhhh")
+    return req; // Return the user object set by the JWT strategy
+  }
 
   @Post('login')
   async login(@Body() body: { phone: string; password: string }, @Res() res: Response) {
     const { phone, password } = body;
-    const userToken = await this.authService.validateUser(phone, password);
+    const userInfo = await this.authService.validateUser(phone, password);
+    const accessToken = await this.authService.login(userInfo)
     // Set the cookie with the token
-    res.cookie('jwt', userToken, {
+    res.cookie('jwt', accessToken, {
       httpOnly: true, // Ensures the cookie is accessible only by the web server
-      secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
-      maxAge: 24 * 60 * 60 * 1000, // Set expiration for the cookie (1 day in ms)
-      sameSite: 'strict', // Restrict cookie usage to same site
+      // secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+      // secure: true,
+      // maxAge: 24 * 60 * 60 * 1000, // Set expiration for the cookie (1 day in ms)
+      maxAge: 3600000, // Cookie expiration time (e.g., 1 hour)
+      // sameSite: 'strict', // Restrict cookie usage to same site
     });
-    return this.authService.login(userToken);
+
+    
+    console.log('====================================');
+    console.log(userInfo, accessToken);
+    console.log('====================================');
+    // return accessToken;
+    return res.status(200).json({ message: 'Login successful', info: {accessToken, userInfo} });
+  }
+
+  // @Get('verify-token')
+  // verifyToken(@Req() req: Request): { valid: boolean; message: string } {
+  //   console.log(req.headers, "hhdgdgffs"); 
+  //   const token = req.cookies['jwt']; // Retrieve token from cookies
+  //   console.log(token, "hhdgdgffs")
+  //   if (!token) {
+  //     throw new UnauthorizedException('No token provided');
+  //   }
+
+  //   try {
+  //     this.jwtService.verify(token, { secret: process.env.JWT_SECRET });
+  //     return { valid: true, message: 'Token is valid' };
+  //   } catch (error: any) {
+  //     throw new UnauthorizedException('Invalid or expired token', error);
+  //   }
+  // }
+
+  @Get('verify-token')
+  async verifyToken(@Headers('authorization') authHeader: string): Promise<{ valid: boolean; message: string; }> {
+    // console.log(authHeader, "hhdgdgffs", authHeader[0]); 
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      throw new UnauthorizedException('No token provided');
+    }
+
+    const token = authHeader.split(' ')[1]; // Extract token from the "Bearer <token>" format
+    // console.log(token, "Token extracted from header");
+
+    try {
+      const validTkn: any = await this.jwtService.verify(token, { secret: 'your_jwt_secret' });
+      console.log(validTkn, "ooppuuttrree"); 
+      return validTkn;
+    } catch (error: any) {
+      throw new UnauthorizedException('Invalid or expired token', error);
+    }
   }
 }
