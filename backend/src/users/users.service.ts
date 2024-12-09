@@ -6,6 +6,7 @@ import {
   Users,
   UsersDocument,
 } from 'src/entities/user.entity';
+import { INITIAL_SELECTED_TASKCOUNT } from 'src/utils/constants';
 
 /* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
@@ -25,9 +26,19 @@ export class UsersService {
   async createUser(password: string, packageId: string, parentId?: string, email?: string,): Promise<Users> {
     const parent: any = parentId ? await this.userModel.findById(parentId) : null;
 
-    const pkg = packageId ? await this.packageModel.findById(packageId) : null;
+    // const pkg = packageId ? await this.packageModel.findById(packageId) : null;
 
-    if (packageId && !pkg) throw new Error('Package not found');
+    if (!parent) throw new Error('Parent not found');
+
+    // Find the package, either by ID or select the smallest package by level
+    let pkg = null;
+    if (packageId) {
+      pkg = await this.packageModel.findById(packageId);
+      if (!pkg) throw new Error('Package not found');
+    } else {
+      pkg = await this.packageModel.findOne().sort({ level: 1 }); // Find the package with the smallest level
+      if (!pkg) throw new Error('No packages available');
+    }
 
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -37,9 +48,11 @@ export class UsersService {
       password: hashedPassword,
       status: 'active',
       accountType: 'internship', 
+      selectedTasksCount: INITIAL_SELECTED_TASKCOUNT, 
       parent: parent ? parent._id : null,
       package: pkg ? pkg._id : null,
       internshipExpiry: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
+      children: []
     });
 
     await user.save();
@@ -112,6 +125,7 @@ export class UsersService {
 
   async findByPhone(phone: string): Promise<UsersDocument | null> {
     return this.userModel.findOne({ phone })
+    // .populate('package')
     // .populate('parent', 'username email') // Populate parent details
     // .populate('children', 'username email') // Populate children details
     // .populate('package', 'name price') // Populate package details

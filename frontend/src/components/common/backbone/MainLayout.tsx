@@ -1,6 +1,8 @@
 "use client";
 import React from 'react';
 
+import { useUserInfo } from '@/hooks/useUserInfo';
+
 import BottomNavigation from './other_component/BottomNavigation';
 import HeaderNavigation from './other_component/HeaderNavigation';
 import SidebarNavigation from './other_component/SidebarNavigation';
@@ -11,6 +13,8 @@ const MainLayout = ({
     children: React.ReactNode;
 }) => {
     const [sidebarOpen, setSidebarOpen] = React.useState(false);
+    const { user } = useUserInfo ()
+    console.log(user, "user info")
     return (
         <>
             {/* <!-- ===== Page Wrapper Star ===== --> */}

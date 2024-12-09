@@ -23,6 +23,12 @@ export class Users {
   @Prop({ required: false, unique: true })
   email: string;
 
+  @Prop({ required: false, unique: true })
+  firstName: string;
+
+  @Prop({ required: false, unique: true })
+  lastName: string;
+
   @Prop({ default: 0 })
   phone: string;
 
@@ -37,6 +43,9 @@ export class Users {
 
   @Prop({ default: 0 })
   funds: number;
+
+  @Prop({ default: 5, required: false }) // Track selected tasks
+  selectedTasksCount: number;
 
   @Prop({ enum: ['internship', 'regular'], default: 'internship' })
   accountType: string;

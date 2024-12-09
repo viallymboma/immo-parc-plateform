@@ -27,4 +27,12 @@ export class UpdateUserDto {
   @IsString()
   @IsOptional()
   readonly status?: string;
+
+  @IsString()
+  @IsOptional() // Optional in case you do not add it
+  readonly firstName?: string;
+
+  @IsString()
+  @IsOptional() // Optional in case you do not add it
+  readonly lastName?: string;
 }

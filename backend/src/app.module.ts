@@ -17,6 +17,7 @@ import { ReportsModule } from './reports/reports.module';
 import { TasksModule } from './tasks/tasks.module';
 import { TransactionModule } from './transactions/transaction.module';
 import { UsersModule } from './users/users.module';
+import { TaskAssignmentModule } from './task-assignment/task-assignment.module';
 
 @Module({
 	imports: [
@@ -29,7 +30,7 @@ import { UsersModule } from './users/users.module';
 		), 
 		ConfigModule.forRoot({
 			isGlobal: true, // Makes the config accessible across all modules
-		}),
+		}), TaskAssignmentModule,
 	],
 	controllers: [AppController], 
 	providers: [AppService],

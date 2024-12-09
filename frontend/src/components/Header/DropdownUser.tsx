@@ -3,14 +3,20 @@ import { useState } from 'react';
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 import ClickOutside from '@/components/ClickOutside';
 import { useAuth } from '@/hooks/useAuth';
+import { useUserInfo } from '@/hooks/useUserInfo';
+
+// import { useAuth } from '@/hooks/useAuth';
 
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false); 
-
-  const { user } = useAuth();
+  const router = useRouter();
+  const { user } = useUserInfo (); 
+  const { logout } = useAuth (); 
+  console.log(user, "user info")
 
   return (
     <ClickOutside onClick={() => setDropdownOpen(false)} className="relative">
@@ -35,7 +41,7 @@ const DropdownUser = () => {
         </span>
 
         <span className="flex items-center gap-2 font-medium text-dark dark:text-dark-6">
-          <span className="hidden lg:block">Henry Boss</span>
+          <span className="hidden lg:block">{ user?.userInfo?.firstName}</span>
 
           <svg
             className={`fill-current duration-200 ease-in ${dropdownOpen && "rotate-180"}`}
@@ -79,10 +85,10 @@ const DropdownUser = () => {
 
             <span className="block">
               <span className="block font-medium text-dark dark:text-white">
-                Henry Boss
+              { user?.userInfo?.firstName } { user?.userInfo?.lastName}
               </span>
               <span className="block font-medium text-dark-5 dark:text-dark-6">
-                henryn@immo-parc.com
+              { user?.userInfo?.phone ? user?.userInfo?.phone : user?.userInfo?.email }
               </span>
             </span>
           </div>
@@ -148,7 +154,10 @@ const DropdownUser = () => {
             </li>
           </ul>
           <div className="p-2.5">
-            <Link href={"/auth/signin"} className="flex w-full items-center gap-2.5 rounded-[7px] p-2.5 text-sm font-medium text-dark-4 duration-300 ease-in-out hover:bg-gray-2 hover:text-dark dark:text-dark-6 dark:hover:bg-dark-3 dark:hover:text-white lg:text-base">
+            <Link onClick={() => {
+              logout (); 
+              router.replace('/login');
+            }} href={"/auth/signin"} className="flex w-full items-center gap-2.5 rounded-[7px] p-2.5 text-sm font-medium text-dark-4 duration-300 ease-in-out hover:bg-gray-2 hover:text-dark dark:text-dark-6 dark:hover:bg-dark-3 dark:hover:text-white lg:text-base">
               <svg
                 className="fill-current"
                 width="18"

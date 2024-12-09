@@ -28,13 +28,6 @@ export class AuthController {
     private readonly jwtService: JwtService, 
   ) {}
 
-  @UseGuards(JwtAuthGuard) // Ensures the user is authenticated
-  @Get('me')
-  getProfile(@Req() req: Request) {
-    console.log(req, "hhhhhhhhhhhh")
-    return req; // Return the user object set by the JWT strategy
-  }
-
   @Post('login')
   async login(@Body() body: { phone: string; password: string }, @Res() res: Response) {
     const { phone, password } = body;
@@ -58,22 +51,15 @@ export class AuthController {
     return res.status(200).json({ message: 'Login successful', info: {accessToken, userInfo} });
   }
 
-  // @Get('verify-token')
-  // verifyToken(@Req() req: Request): { valid: boolean; message: string } {
-  //   console.log(req.headers, "hhdgdgffs"); 
-  //   const token = req.cookies['jwt']; // Retrieve token from cookies
-  //   console.log(token, "hhdgdgffs")
-  //   if (!token) {
-  //     throw new UnauthorizedException('No token provided');
-  //   }
-
-  //   try {
-  //     this.jwtService.verify(token, { secret: process.env.JWT_SECRET });
-  //     return { valid: true, message: 'Token is valid' };
-  //   } catch (error: any) {
-  //     throw new UnauthorizedException('Invalid or expired token', error);
-  //   }
-  // }
+  @Get('me')
+  @UseGuards(JwtAuthGuard) // Ensures the user is authenticated
+  async getProfile(@Req() req: Request, @Res() res: Response) {
+    // console.log(req, req.cookies.jwt, req.headers, "hhhhhhhhhhhh"); 
+    const extractToken: string = req.cookies.jwt
+    const userInfo: any = await this.jwtService.verify(extractToken, { secret: 'your_jwt_secret' });
+    // console.log(userInfo, "hhhhhhuserInfohhhhhh"); 
+    return res.status(200).json({ message: 'Login successful', userInfo }); // Return the user object set by the JWT strategy
+  }
 
   @Get('verify-token')
   async verifyToken(@Headers('authorization') authHeader: string): Promise<{ valid: boolean; message: string; }> {
@@ -93,4 +79,55 @@ export class AuthController {
       throw new UnauthorizedException('Invalid or expired token', error);
     }
   }
+
+  @Get('logout')
+  logout(@Res() res: Response) {
+    res.clearCookie('jwt', {
+      httpOnly: true, // Ensure the cookie cannot be accessed via JavaScript
+      // sameSite: 'strict', // Adjust based on your needs
+      // secure: true, // Use this if your app is served over HTTPS
+    });
+    return res.status(200).json({ message: 'Logged out successfully' });
+  }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // @Get('verify-token')
+  // verifyToken(@Req() req: Request): { valid: boolean; message: string } {
+  //   console.log(req.headers, "hhdgdgffs"); 
+  //   const token = req.cookies['jwt']; // Retrieve token from cookies
+  //   console.log(token, "hhdgdgffs")
+  //   if (!token) {
+  //     throw new UnauthorizedException('No token provided');
+  //   }
+
+  //   try {
+  //     this.jwtService.verify(token, { secret: process.env.JWT_SECRET });
+  //     return { valid: true, message: 'Token is valid' };
+  //   } catch (error: any) {
+  //     throw new UnauthorizedException('Invalid or expired token', error);
+  //   }
+  // }

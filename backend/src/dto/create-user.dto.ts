@@ -24,5 +24,13 @@ export class CreateUserDto {
   @IsString()
   @IsOptional() // Optional in case the status is auto-assigned during creation
   readonly status?: string;
+
+  @IsString()
+  @IsOptional() // Optional in case you do not add it
+  readonly firstName?: string;
+
+  @IsString()
+  @IsOptional() // Optional in case you do not add it
+  readonly lastName?: string;
 }
 

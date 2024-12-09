@@ -12,7 +12,7 @@ export class Packages extends Document {
   @Prop({ required: true })
   name: string;
 
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true, unique: true, default: 0 })
   level: number;
 
   @Prop({ required: true })
