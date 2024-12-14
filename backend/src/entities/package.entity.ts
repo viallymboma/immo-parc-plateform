@@ -1,4 +1,8 @@
-import { Document } from 'mongoose';
+/* eslint-disable prettier/prettier */
+import {
+  Document,
+  Types,
+} from 'mongoose';
 
 /* eslint-disable prettier/prettier */
 import {
@@ -35,6 +39,9 @@ export class Packages extends Document {
 
   @Prop({ required: false })
   description?: string;
+
+  @Prop({ type: [Types.ObjectId], ref: 'Task', default: [] }) // Array of task IDs
+  listOfTasks: Types.ObjectId[];
 
   @Prop({ type: Map, of: String, required: false }) // Dynamic additional options
   options?: Map<string, string>;

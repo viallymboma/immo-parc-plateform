@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { Model } from 'mongoose';
+import { Packages } from 'src/entities/package.entity';
 import {
   Task,
   TaskDocument,
@@ -20,18 +21,81 @@ import { InjectModel } from '@nestjs/mongoose';
 export class TasksService {
   constructor(
     @InjectModel(Task.name) private readonly taskModel: Model<TaskDocument>,
-    @InjectModel(Users.name) private readonly userModel: Model<UsersDocument>,
+    @InjectModel(Users.name) private readonly userModel: Model<UsersDocument>, 
+    @InjectModel(Packages.name) private packageModel: Model<[]>,
   ) {}
 
-  async createTask(description: string, imageUrl: string, videoLink: string): Promise<Task> {
-    const task = new this.taskModel({
-      description,
-      imageUrl,
-      videoLink,
-      status: 'not_assigned',
-    });
-    return task.save();
+  async getTasksForUser(userId: string): Promise<Task[]> {
+    // Fetch the user and their subscribed package
+    const user = await this.userModel.findById(userId).populate('package', 'listOfTasks');
+    
+    if (!user || !user.package) {
+      throw new Error('User or user package not found');
+    }
+  
+    // // Fetch tasks associated with the package
+    // const packageWithTasks: any = await this.packageModel
+    //   .findById(user.package._id)
+    //   .populate('listOfTasks')
+    //   .exec();
+
+    // Fetch tasks associated with the package and populate the packageId field
+    const packageWithTasks: any = await this.packageModel
+    .findById(user.package._id)
+    .populate({
+      path: 'listOfTasks',
+      populate: {
+        path: 'packageId', // Populate the packageId for each task
+        // select: 'name price', // Specify fields to include from the Package schema
+      },
+    })
+    .exec();
+  
+    if (!packageWithTasks) {
+      throw new Error('Package not found or has no tasks');
+    }
+  
+    // Return the list of tasks
+    return packageWithTasks.listOfTasks as Task[];
   }
+
+  async getAllTasks(): Promise<Task[]> {
+    return await this.taskModel.find().exec(); // Fetch all tasks
+  }  
+
+  async createTask(taskData: any): Promise<Task> {
+    const { packageId, ...taskDetails } = taskData;
+
+    // Validate packageId
+    const pkg: any = await this.packageModel.findById(packageId);
+    if (!pkg) {
+      throw new Error('Invalid package ID');
+    }
+
+    // Create the task
+    const task = new this.taskModel({ ...taskDetails, packageId });
+    const createdTask = await task.save();
+
+    // Update the package to include the new task ID in listOfTasks
+    pkg.listOfTasks.push(createdTask._id);
+    await pkg.save();
+
+    return createdTask;
+  }
+
+  // async getAllTasks(): Promise<Task> {
+  //   const task: any = await this.taskModel.findById(taskId);
+  //   const user: any = await this.userModel.findById(userId);
+
+  //   if (!task) throw new Error('Task not found');
+  //   if (!user) throw new Error('User not found');
+
+  //   task.assignedTo.push(user._id);
+  //   task.status = 'assigned';
+
+  //   await task.save();
+  //   return task;
+  // }
 
   async assignTask(taskId: string, userId: string): Promise<Task> {
     const task: any = await this.taskModel.findById(taskId);

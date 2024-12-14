@@ -150,7 +150,26 @@ const getRandomTaskStatus = () => {
     return taskStatus[randomIndex];
 };
 
+export type PackageObjectType = {
+    _id: string;
+    name: string;
+    level: number;
+    investment: number; // Fixed typo from "inverstment" to "investment"
+    numberOfTaskPerDay: number;
+    priceEarnedPerTaskDone: number;
+    priceEarnedForAllTaskDonePerDay: number;
+    priceEarnedForAllTaskDonePerMonth: number;
+    priceEarnedForAllTaskDonePerYear: number;
+    description: string;
+    createdAt: string; // Could be a Date if you prefer Date objects
+    updatedAt: string; // Could be a Date if you prefer Date objects
+    __v: number;
+    listOfTasks: string[]; // Array of task IDs, assuming these are ObjectId references
+  }
+  
+
 export type TaskDataType = {
+    _id?: string, 
     id: string | number;
     taskTitle: string;
     taskMission: string; 
@@ -164,6 +183,7 @@ export type TaskDataType = {
     createdAt?: string; // Optional field
     isSelected?: boolean; // New property to indicate selection state
     isSubmitted: boolean;
+    packageId?: PackageObjectType,
     submitTask?: () => void;
     // id: number | string, 
     // taskTitle?: string, 
@@ -238,6 +258,9 @@ export const tasks: TaskDataType [] = [
         taskLink: "https://www.youtube.com/watch?v=_M3bAO6JG_c", 
     }, 
 ]
+
+
+
 
 
 // Description de la tâche：

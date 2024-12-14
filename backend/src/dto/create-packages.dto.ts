@@ -43,6 +43,10 @@ export class CreatePackageDto {
   @IsString()
   description?: string;
 
+  @IsOptional()
+  @IsString()
+  listOfTasks: []
+
 //   @IsOptional()
 //   @IsMap()
 //   options?: Map<string, string>;

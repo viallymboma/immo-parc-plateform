@@ -17,11 +17,11 @@ export class PackageService {
   }
 
   async findAllPackages(): Promise<Packages[]> {
-    return this.packageModel.find().exec();
+    return await  this.packageModel.find().exec();
   }
 
   async updatePackage(packageId: string, data: Partial<Packages>): Promise<Packages> {
-    return this.packageModel.findByIdAndUpdate(packageId, data, { new: true }).exec();
+    return await this.packageModel.findByIdAndUpdate(packageId, data, { new: true }).exec();
   }
 
   async deletePackage(packageId: string): Promise<void> {
@@ -29,6 +29,6 @@ export class PackageService {
   }
 
   async findPackageById(packageId: string): Promise<Packages | null> {
-    return this.packageModel.findById(packageId).exec();
+    return await this.packageModel.findById(packageId).exec();
   }
 }

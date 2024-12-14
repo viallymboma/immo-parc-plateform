@@ -4,6 +4,7 @@ import React from 'react';
 import Image from 'next/image'; // Use for the icon image (if applicable)
 import { useRouter } from 'next/navigation';
 
+import { useUserInfo } from '@/hooks/useUserInfo';
 import { useTaskStore } from '@/store/task-store';
 
 import { TaskDataType } from './backbone/other_component/data';
@@ -12,11 +13,34 @@ type TaskCardType = {
   task: TaskDataType
 }
 
-const TaskCardStyled: React.FC<TaskCardType> = ({ task }) => {
+const TaskCardStyled: React.FC<TaskCardType> = React.memo(({ task }) => {
 
   const router = useRouter ()
 
   const { toggleCategory, toggleTaskSelection, selectTask,  } = useTaskStore();
+
+  // const router = useRouter();
+  // const { selectTask } = useTaskStore();
+  const { user } = useUserInfo(); // Get user info to access numberOfTaskPerDay
+  const [isSelected, setIsSelected] = React.useState(task?.isSelected || false);
+
+  const handleSelection = () => {
+    if (!isSelected && user?.numberOfSelectedTasks >= user?.package?.numberOfTaskPerDay) {
+      // If the number of selected tasks exceeds the limit, prevent selection
+      alert(`You can select only up to ${user?.package?.numberOfTaskPerDay} tasks per day.`);
+      return;
+    }
+
+    setIsSelected(!isSelected); // Toggle the selection state
+    selectTask(task?.id as number); // Update the global task store
+  };
+
+  React.useEffect(() => {
+    // Sync the selected state with the store whenever it changes
+    if (isSelected !== task?.isSelected) {
+      selectTask(task?.id as number);
+    }
+  }, [isSelected, task?.id, task?.isSelected, selectTask]);
 
   return (
     <>
@@ -34,14 +58,16 @@ const TaskCardStyled: React.FC<TaskCardType> = ({ task }) => {
         <div className='flex flex-row h-[90px]  items-center'>
             <div className=''
               onClick={ () => {
-                selectTask (task?.id as number); 
+                // selectTask (task?.id as number); 
+                setIsSelected(!isSelected); // Toggle selection locally
                 router?.push(`/backoffice/task-list/${ task?.id }`)
               }}
             >
               {/* <p className="text-sm font-bold">Demande: {task.taskTitle}</p> */}
               <p className="text-sm font-bold">{task.taskShortInstruction}</p>
               {/* <p className="text-sm text-gray-700 overflow-hidden text-ellipsis whitespace-normal line-clamp-2">{task.taskDescription}</p> */}
-              <p className="text-lg font-semibold text-primary mt-2">XOF {task.taskRemuneration}</p>
+              {/* <p className="text-lg font-semibold text-primary mt-2">XOF {task.taskRemuneration}</p> */}
+              <p className="text-lg font-semibold text-primary mt-2">XOF {task.packageId?.priceEarnedPerTaskDone}</p>
             </div>
 
             <div className='flex items-center justify-center w-[100px] h-[100px]'>
@@ -53,13 +79,16 @@ const TaskCardStyled: React.FC<TaskCardType> = ({ task }) => {
                   id={`task-${task?.id}`} // Unique ID for each checkbox
                   type="checkbox"
                   hidden
-                  checked={task?.isSelected} // Reflect the isSelected state
-                  onChange={() => {
-                    toggleTaskSelection(task?.id as number); // Toggle selection on change
-                    console.log("Toggled task ID:", task?.id); // Debugging log
-                  }}
+                  // checked={task?.isSelected} // Reflect the isSelected state
+                  // onChange={() => {
+                  //   toggleTaskSelection(task?.id as number); // Toggle selection on change
+                  //   console.log("Toggled task ID:", task?.id); // Debugging log
+                  // }}
+                  checked={isSelected} // Reflect the local isSelected state
+                  onChange={handleSelection} // Handle selection and limit
                 />
-                <div className={`w-10 h-10 flex items-center justify-center rounded-full border-2 border-yellow-500 text-yellow-500 hover:bg-yellow-500 ${ task?.isSelected ? "bg-yellow-500" : "bg-transparent" } hover:text-white transition duration-300`}>
+                {/* <div className={`w-10 h-10 flex items-center justify-center rounded-full border-2 border-yellow-500 text-yellow-500 hover:bg-yellow-500 ${ task?.isSelected ? "bg-yellow-500" : "bg-transparent" } hover:text-white transition duration-300`}> */}
+                <div className={`w-10 h-10 flex items-center justify-center rounded-full border-2 border-yellow-500 text-yellow-500 hover:bg-yellow-500 ${ isSelected ? "bg-yellow-500" : "bg-transparent" } hover:text-white transition duration-300`}>
                     {/* Add any icon or content here */}
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -81,7 +110,7 @@ const TaskCardStyled: React.FC<TaskCardType> = ({ task }) => {
         </div>
     </>
   );
-};
+});
 
 export default TaskCardStyled;
 

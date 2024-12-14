@@ -22,6 +22,7 @@ import {
   TaskDataType,
 } from '@/components/common/backbone/other_component/data';
 import TaskCardStyled from '@/components/common/TaskCard';
+import useFetchTasks from '@/hooks/useFetchTasks';
 import { useTaskStore } from '@/store/task-store';
 
 import AboutUs from './about-us/AboutUs';
@@ -38,7 +39,19 @@ const images = [
 
 const BackofficeModule = () => {
 
-  const { tasks_ } = useTaskStore();
+  const { tasks_ } = useTaskStore(); 
+
+  const { tasksDataSet, error, isValidating } = useFetchTasks (); 
+
+  if (isValidating) {
+    return <div>Loading...</div>
+  }
+
+  if (error) {
+    return <div>Error...</div>
+  }
+
+  console.log(tasksDataSet, "uuuuuuuuuuu")
 
   return (
     <div>
@@ -75,9 +88,9 @@ const BackofficeModule = () => {
           <h1 className='text-primary text-[20px] font-bold'>Tâches pour aujourd'hui</h1>
         </div>
         <div className='grid grid-cols-1  sm:grid-cols-2 lg:grid-cols-3 gap-3'>
-          {tasks_?.map((property: TaskDataType) => {
+          {tasksDataSet?.map((property: TaskDataType) => {
             return (
-                <div key={ property?.id } className='flex flex-row gap-1 items-center justify-between dark:bg-[#122031] bg-white shadow-lg rounded-lg  max-w-sm'>
+                <div key={ property?._id } className='flex flex-row gap-1 items-center justify-between dark:bg-[#122031] bg-white shadow-lg rounded-lg  max-w-sm'>
                     <TaskCardStyled task={ property } />
                 </div>
             )

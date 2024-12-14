@@ -35,10 +35,10 @@ export class Users {
   @Prop({ required: true })
   password: string;
 
-  @Prop({ type: Types.ObjectId, ref: 'User' })
+  @Prop({ type: Types.ObjectId, ref: 'Users' })
   parent: Types.ObjectId;
 
-  @Prop({ type: [Types.ObjectId], ref: 'User', default: [] })
+  @Prop({ type: [Types.ObjectId], ref: 'Users', default: [] })
   children: Types.ObjectId[];
 
   @Prop({ default: 0 })
@@ -56,7 +56,7 @@ export class Users {
   @Prop({ enum: ['active', 'inactive'], default: 'active' })
   status: string;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Package', required: false })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Packages', required: false })
   package: Packages | null; // Reference to a Package
 
   @Prop()

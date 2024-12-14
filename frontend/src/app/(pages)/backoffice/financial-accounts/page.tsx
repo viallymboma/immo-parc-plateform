@@ -31,7 +31,7 @@ const MyFinancialAccountPage = () => {
             <ReturnHeader 
                 headerName='Mes Comptes Financiers'
                 returnBtnLabel='Retour'
-                returnLink='/dashboard/my-account'
+                returnLink='/backoffice/my-account'
             />
             <div className='flex flex-col gap-3 '>
                 {
