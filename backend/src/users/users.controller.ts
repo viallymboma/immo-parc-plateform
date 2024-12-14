@@ -24,8 +24,8 @@ export class UsersController {
   }
 
   @Post("/create-regular-user")
-  createUser(@Body() body: { phone: string; password: string; parentId?: string }) {
-    return this.usersService.createUser(body.phone, body.password, body.parentId);
+  createUser(@Body() body: { phone: string; password: string; packageId?: string, parentId?: string, email?: string, firstName?: string, lastName?: string }) {
+    return this.usersService.createUser(body.phone, body.password, body.packageId, body.parentId, body.email, body.firstName, body.lastName); 
   }
 
   @Post("/create-super-admin")

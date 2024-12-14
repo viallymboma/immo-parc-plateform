@@ -23,10 +23,10 @@ export class Users {
   @Prop({ required: false, unique: true })
   email: string;
 
-  @Prop({ required: false, unique: true })
+  @Prop({ required: false })
   firstName: string;
 
-  @Prop({ required: false, unique: true })
+  @Prop({ required: false })
   lastName: string;
 
   @Prop({ default: 0 })

@@ -69,7 +69,7 @@ const InputField: React.FC<InputFieldProps> = ({
                     }
 
                 </div>
-                <p>
+                <p className="text-red">
                     {
                         error && errorMessage
                     }

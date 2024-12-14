@@ -37,20 +37,21 @@ export function useUserInfo() {
         revalidateOnReconnect: false, // Disable revalidation on reconnect
     });
 
-    if (isValidating) {
-        return {
-            user: "Loading..."
-        }
-    }
+    // if (isValidating) {
+    //     return {
+    //         user: "Loading..."
+    //     }
+    // }
 
-    if (error) {
-        return {
-            user: "Error..."
-        }
-    }
+    // if (error) {
+    //     return {
+    //         user: "Error..."
+    //     }
+    // }
 
     return {
-        user,
+        user, 
+        isValidating, 
         loading: !error && !user,
         error,
     };

@@ -14,10 +14,10 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { PackageModule } from './packages/packages.module';
 import { ReportsModule } from './reports/reports.module';
+import { TaskAssignmentModule } from './task-assignment/task-assignment.module';
 import { TasksModule } from './tasks/tasks.module';
 import { TransactionModule } from './transactions/transaction.module';
 import { UsersModule } from './users/users.module';
-import { TaskAssignmentModule } from './task-assignment/task-assignment.module';
 
 @Module({
 	imports: [

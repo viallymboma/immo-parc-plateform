@@ -4,12 +4,19 @@ import React from 'react';
 import Image from 'next/image';
 
 import QRCodeComponent from '@/components/qr-code/QRCodeComponent';
+import { useUserInfo } from '@/hooks/useUserInfo';
 
 import InviteFriend from '../../../../../../public/imgs/in-icon.png';
 
 const InviteFriendsModule = () => {
-    const url = `http://localhost:3000/auth/signup?supervisor=695500474`;
+    const { user } = useUserInfo ()
+    // const url = `http://localhost:3000/auth/signup?supervisor=${ user?.userInfo?.phone }`;
     const qrRef = React.useRef<HTMLDivElement>(null);
+
+    // Extract the current domain dynamically
+    const currentDomain = typeof window !== "undefined" ? window.location.origin : "";
+    const url = `${ currentDomain }/auth/signup?supervisor=${ user?.userInfo?.phone }`;
+    console.log(url, "alirght")
 
     // Function to save the QR code as an image
     const saveQRCode = () => {

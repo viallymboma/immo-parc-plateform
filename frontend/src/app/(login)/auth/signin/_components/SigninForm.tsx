@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 
+import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 
 interface SigninFormValues {
@@ -118,12 +119,12 @@ export default function SigninForm() {
 
       {/* Submit Button */}
       <div className="mb-4.5">
-        <button
+        <Button
           type="submit"
           className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary p-4 font-medium text-white transition hover:bg-opacity-90"
         >
           Se connecter
-        </button>
+        </Button>
       </div>
     </form>
   );

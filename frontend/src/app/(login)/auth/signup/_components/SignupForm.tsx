@@ -1,7 +1,11 @@
 "use client";
 import React from 'react';
 
-import { useRouter } from 'next/navigation';
+import { EyeOffIcon } from 'lucide-react';
+import {
+  useRouter,
+  useSearchParams,
+} from 'next/navigation';
 import {
   SubmitHandler,
   useForm,
@@ -10,16 +14,21 @@ import {
 import InputField from '@/components/FormElements/InputElement/InputField';
 import {
   EmailSvgIcon,
+  EyeSvgIcon,
   PasswordSvgIcon,
   UserSvgIcon,
 } from '@/components/svgs/SvgIcons';
+import { Button } from '@/components/ui/button';
+import apiClient from '@/lib/apiClient';
 
 type SignupFormType = {
-  fullName?: string; 
-  email?: string;
-  contact: string; 
+  firstName?: string; 
+  lastName?: string; 
+  email?: string; 
+  phone: string; 
   password: string; 
-  confirmPassword: string;
+  parentId: string; 
+  confirmPassword: string; 
 }
 
 const SignupForm = () => {
@@ -31,45 +40,52 @@ const SignupForm = () => {
     formState: {errors, isValid }, 
   } = useForm <SignupFormType> (); 
 
+  const [ showPassword, setShowPassword ] = React.useState <boolean> (false)
+
   const router = useRouter (); 
+  const searchParams = useSearchParams();
+  // Extract the "supervisor" parameter from the URL
+  const supervisor = searchParams.get('supervisor') || ''; 
 
   const onSubmit: SubmitHandler<SignupFormType> = async (data) => {
-    router.push ("/auth/signin");
+    data = {
+      ...data, 
+      parentId: supervisor
+    }
+    console.log(data, "what is going?"); 
+    // return
+    const response = await apiClient.post('/users/create-regular-user', data); 
+    router.push ("/auth/signin"); 
+    // return response.data; 
   }
 
   return (
     <form onSubmit={handleSubmit (onSubmit)}>
       <InputField 
-        label='Nom'
+        label='Prenom'
+        name='firstName'
         register={
-          register('fullName', { required: false, minLength: 3 })
+          register('firstName', { required: false, minLength: 3 })
         }
         svg={ <UserSvgIcon /> }
         type='text'
-        placeholder='Entrez le nom complet'
+        placeholder='Entrez votre prenom'
       />
-      {/* <div className="mb-4">
-        <label
-          htmlFor="email"
-          className="mb-2.5 block font-medium text-dark dark:text-white"
-        >
-          Nom
-        </label>
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="Entrez le nom complet"
-            name="fullName"
-            className="w-full rounded-lg border border-stroke bg-transparent py-[15px] pl-6 pr-11 font-medium text-dark outline-none focus:border-primary focus-visible:shadow-none dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary"
-          />
-          <span className="absolute right-4.5 top-1/2 -translate-y-1/2">
-            <UserSvgIcon />
-          </span>
-        </div>
-      </div> */}
+
+      <InputField 
+        label='Nom'
+        name='lastName'
+        register={
+          register('lastName', { required: false, minLength: 3 })
+        }
+        svg={ <UserSvgIcon /> }
+        type='text'
+        placeholder='Entrez votre surnom'
+      />
 
       <InputField 
         label='Email'
+        name='email'
         register={
           register('email', { required: false, minLength: 3 })
         }
@@ -78,146 +94,78 @@ const SignupForm = () => {
         placeholder='Entrez votre email'
       />
 
-      {/* <div className="mb-4">
-        <label
-          htmlFor="email"
-          className="mb-2.5 block font-medium text-dark dark:text-white"
-        >
-          Email
-        </label>
-        <div className="relative">
-          <input
-            type="email"
-            placeholder="Entrez votre email"
-            name="email"
-            className="w-full rounded-lg border border-stroke bg-transparent py-[15px] pl-6 pr-11 font-medium text-dark outline-none focus:border-primary focus-visible:shadow-none dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary"
-          />
-
-          <span className="absolute right-4.5 top-1/2 -translate-y-1/2">
-            <EmailSvgIcon />
-          </span>
-        </div>
-      </div> */}
-
       <InputField 
         label='Numéro de téléphone'
+        name='phone'
         register={
-          register('contact', { 
+          register('phone', { 
             required: true, 
             pattern: /^(6(9|7|6|5|2|8)[0-9]{7}|2[0-9]{8})/
+            // pattern: /^6(9|7|6|5|2|8)[0-9]{7}$/,
           })
         }
         svg={ <EmailSvgIcon /> }
         type='number'
         placeholder='Entrez le numéro de téléphone'
-        error={ errors?.contact }
-        errorMessage='Fixing message'
+        error={ errors?.phone }
+        errorMessage='Phone number invalid'
       />
 
-      {/* <div className="mb-4">
-        <label
-          htmlFor="email"
-          className="mb-2.5 block font-medium text-dark dark:text-white"
-        >
-          Numéro de téléphone
-        </label>
-        <div className="relative">
-          <input
-            type="number"
-            placeholder="Entrez le numéro de téléphone"
-            name="contact"
-            className="w-full rounded-lg border border-stroke bg-transparent py-[15px] pl-6 pr-11 font-medium text-dark outline-none focus:border-primary focus-visible:shadow-none dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary"
-          />
+      <div className='relative'>
 
-          <span className="absolute right-4.5 top-1/2 -translate-y-1/2">
-            <MessageSvgIcon />
-          </span>
+        <InputField 
+          label='Mot de passe'
+          name='password'
+          register={
+            register('password', { 
+              required: true, 
+              minLength: 8,
+              pattern: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()]).{8,}$/
+            })
+          }
+          svg={ <PasswordSvgIcon /> }
+          type={ showPassword ? 'text' : 'password'}
+          placeholder='Entrez votre mot de passe'
+          error={ errors?.password }
+          errorMessage='Mot de passe'
+        />
+
+        <div onClick={() => setShowPassword (showPassword => !showPassword)} className='absolute right-[15%] cursor-pointer top-[60%] rounded-full '>
+          { showPassword ? <EyeSvgIcon /> : <EyeOffIcon />}
         </div>
-      </div> */}
+        
+      </div>
 
-      <InputField 
-        label='Mot de passe'
-        register={
-          register('password', { 
-            required: true, 
-            minLength: 8,
-            pattern: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()]).{8,}$/
-          })
-        }
-        svg={ <PasswordSvgIcon /> }
-        type='password'
-        placeholder='Entrez votre mot de passe'
-        error={ errors?.password }
-        errorMessage='Fixing message'
-      />
-
-      {/* <div className="mb-5">
-        <label
-          htmlFor="password"
-          className="mb-2.5 block font-medium text-dark dark:text-white"
-        >
-          Mot de passe
-        </label>
-        <div className="relative">
-          <input
-            type="password"
-            name="password"
-            placeholder="Entrez votre mot de passe"
-            autoComplete="password"
-            className="w-full rounded-lg border border-stroke bg-transparent py-[15px] pl-6 pr-11 font-medium text-dark outline-none focus:border-primary focus-visible:shadow-none dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary"
-          />
-
-          <span className="absolute right-4.5 top-1/2 -translate-y-1/2">
-            <PasswordSvgIcon />
-          </span>
+      <div className='relative'>
+        <InputField 
+          label='Confirmer mot de pass'
+          name='confirmPassword'
+          register={
+            register('confirmPassword', { 
+              required: true, 
+              minLength: 8,
+              pattern: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()]).{8,}$/
+            })
+          }
+          svg={ <PasswordSvgIcon /> }
+          type={ showPassword ? 'text' : 'password'}
+          placeholder='Confirmez votre mot de passe'
+          error={ errors?.confirmPassword }
+          errorMessage='Confirmer mot de passe'
+        />
+        <div onClick={() => setShowPassword (showPassword => !showPassword)} className='absolute right-[15%] cursor-pointer top-[60%] rounded-full '>
+          { showPassword ? <EyeSvgIcon /> : <EyeOffIcon />}
         </div>
-      </div> */}
+      </div>
 
-      <InputField 
-        label='Confirmer mot de pass'
-        register={
-          register('confirmPassword', { 
-            required: true, 
-            minLength: 8,
-            pattern: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()]).{8,}$/
-          })
-        }
-        svg={ <PasswordSvgIcon /> }
-        type='password'
-        placeholder='Confirmez votre mot de passe'
-        error={ errors?.confirmPassword }
-        errorMessage='Fixing message'
-      />
-
-      {/* <div className="mb-5">
-        <label
-          htmlFor="password"
-          className="mb-2.5 block font-medium text-dark dark:text-white"
-        >
-          Confirmer mot de pass
-        </label>
-        <div className="relative">
-          <input
-            type="password"
-            name="confirmPassword"
-            placeholder="Confirmez votre mot de passe"
-            autoComplete="password"
-            className="w-full rounded-lg border border-stroke bg-transparent py-[15px] pl-6 pr-11 font-medium text-dark outline-none focus:border-primary focus-visible:shadow-none dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary"
-          />
-
-          <span className="absolute right-4.5 top-1/2 -translate-y-1/2">
-            <PasswordSvgIcon />
-          </span>
-        </div>
-      </div> */}
 
       <div className="mb-4.5">
-        <button
+        <Button
           type="submit"
           className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-primary p-4 font-medium text-white transition hover:bg-opacity-90"
         >
           Créer
-        </button>
+        </Button>
       </div>
     </form>
   );
